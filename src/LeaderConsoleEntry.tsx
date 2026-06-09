@@ -395,8 +395,17 @@ const newcomers = [
     firstResponseReceived: false,
     statusLabel: 'Без цели' as const,
     statusColor: 'terracotta' as const,
-    timeline: ['заявка одобрена', 'доступ открыт', 'Елена вошла в сообщество', 'цель пока не указана'],
-    nextStep: 'Нужно помочь Елене сформулировать цель: зачем она вошла и что хочет получить за первые 7 дней.',
+    timeline: ['заявка одобрена', 'доступ открыт', 'Елена вошла в сообщество', 'цель пока не указана', 'первый шаг выбран как базовый стартовый гайд', 'первая связь пока не появилась', 'опора пока не назначена'],
+    nextStep: 'Лучше помочь Елене сформулировать цель: что она хочет получить в сообществе и какой результат был бы полезен в первые 7 дней. После этого будет проще подобрать первый шаг, опору или ближайшую встречу.',
+    panelIntro: 'Елена уже вошла в сообщество. Сейчас важно понять, с какой целью она пришла: так будет проще подобрать первый шаг, встречу, разбор или человека рядом.',
+    panelProgress: [
+      { label: 'Цель пока не указана', ok: false },
+      { label: 'Первый шаг: стартовый гайд', ok: true },
+      { label: 'Первая связь пока не появилась', ok: false },
+      { label: 'Опора пока не назначена', ok: false },
+    ],
+    panelTimeline: ['заявка одобрена', 'доступ открыт', 'Елена вошла в сообщество', 'цель пока не указана', 'первый шаг выбран как базовый стартовый гайд', 'первая связь пока не появилась', 'опора пока не назначена'],
+    showGoalInline: true,
   },
   {
     name: 'Сергей Волков',
@@ -596,6 +605,26 @@ export default function LeaderConsoleEntry() {
   const [editDraftText, setEditDraftText] = useState(`Илья, привет! Хороший вопрос — на старте действительно легко переусложнить архитектуру.\n\nЯ бы начал с простой структуры: сначала сделать handlers для входящих запросов, отдельный слой services для логики и repository для работы с данными. Не нужно сразу строить \"идеальную архитектуру\" — важнее быстро собрать рабочий поток: создать привычку, получить список привычек и отметить выполнение.\n\nПервый шаг на неделю: собрать минимальное API без авторизации, но с понятным разделением handlers / services / repository. После этого можно будет посмотреть код и аккуратно улучшить структуру.`);
   const [editDraftTitle, setEditDraftTitle] = useState('Илья, начни с простой структуры проекта');
   const [showSendDraftConfirmModal, setShowSendDraftConfirmModal] = useState(false);
+
+  /* ===== GOAL HELP MODAL STATE (for Elena) ===== */
+  const [showGoalHelpModal, setShowGoalHelpModal] = useState(false);
+  const [goalHelpTitle, setGoalHelpTitle] = useState('Елена, давай уточним твою цель на старт');
+  const [goalHelpText, setGoalHelpText] = useState(`Елена, привет! Рады, что ты с нами.
+
+Ты написала, что хочешь показывать код и получать конкретные советы по улучшению. Чтобы мы лучше помогли тебе на старте, давай уточним цель.
+
+Что для тебя сейчас важнее всего?
+
+— улучшить портфолио;
+— разобрать первый pet-проект;
+— понять ошибки в коде;
+— подготовиться к поиску работы;
+— выбрать, с чего начать.
+
+Можешь ответить своими словами. После этого мы подберём тебе понятный первый шаг, встречу или человека рядом.`);
+  const [goalHelpSuggestGoal, setGoalHelpSuggestGoal] = useState(true);
+  const [goalHelpKeepGuide, setGoalHelpKeepGuide] = useState(false);
+  const [goalHelpSuggestSupport, setGoalHelpSuggestSupport] = useState(true);
 
   /* ===== COLLAPSE STATES ===== */
   const [showDraftFull, setShowDraftFull] = useState(false);
@@ -1137,6 +1166,13 @@ export default function LeaderConsoleEntry() {
                     <button onClick={() => setNewcomerSidePanel(null)} className="p-1 rounded-lg transition-colors -mt-0.5" style={{ color: 'var(--text-muted)' }}><X className="w-5 h-5" /></button>
                   </div>
 
+                  {/* Goal highlight — for newcomers without goal */}
+                  {(newcomerSidePanel as any).showGoalInline && !newcomerSidePanel.hasGoal && (
+                    <div className="mt-3 rounded-lg p-3" style={{ backgroundColor: TERRACOTTA_LIGHT, border: `1px solid ${TERRACOTTA_BORDER}` }}>
+                      <p className="text-sm font-semibold" style={{ color: TERRACOTTA }}>Цель пока не указана</p>
+                    </div>
+                  )}
+
                   {/* Badge */}
                   <div className="mb-4 mt-3 flex flex-wrap gap-1.5">
                     <span className="text-[10px] px-2 py-1 rounded-full font-medium" style={{ backgroundColor: newcomerSidePanel.statusColor === 'terracotta' ? TERRACOTTA_LIGHT : SAGE_LIGHT, color: newcomerSidePanel.statusColor === 'terracotta' ? TERRACOTTA : SAGE, border: `1px solid ${newcomerSidePanel.statusColor === 'terracotta' ? TERRACOTTA_BORDER : SAGE_BORDER}` }}>
@@ -1297,6 +1333,13 @@ export default function LeaderConsoleEntry() {
                       </>
                     ) : (newcomerSidePanel as any).hasFirstQuestion ? (
                       <button onClick={() => setShowFirstQuestionReplyModal(true)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--gold)', color: '#fff' }}>Ответить на первый вопрос</button>
+                    ) : (newcomerSidePanel as any).showGoalInline && !newcomerSidePanel.hasGoal ? (
+                      <>
+                        <button onClick={() => setShowGoalHelpModal(true)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--gold)', color: '#fff' }}>Помочь с целью</button>
+                        {!newcomerSidePanel.firstResponseReceived && (
+                          <button onClick={() => setShowFirstReplyModal(true)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Написать первый отклик</button>
+                        )}
+                      </>
                     ) : (
                       <>
                         {!newcomerSidePanel.firstResponseReceived && (
@@ -2310,6 +2353,157 @@ export default function LeaderConsoleEntry() {
                 <button onClick={() => setShowFirstQuestionReplyModal(false)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--gold)', color: '#fff' }}>Отправить ответ</button>
                 <button onClick={() => setShowFirstQuestionReplyModal(false)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Сохранить как черновик</button>
                 <button onClick={() => setShowFirstQuestionReplyModal(false)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-muted)' }}>Вернуться к новичку</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== GOAL HELP MODAL (for Elena) ===== */}
+      {showGoalHelpModal && (
+        <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} onClick={() => setShowGoalHelpModal(false)}>
+          <div className="modal-enter rounded-2xl max-w-lg w-full relative overflow-hidden max-h-[90vh] flex flex-col" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            {/* Header — fixed */}
+            <div className="shrink-0 px-6 md:px-8 pt-6 pb-4" style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-xl font-bold heading-accent" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Помочь с целью</h2>
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Цель помогает новичку не потеряться в первые дни: понять, с чего начать, какой первый шаг выбрать и кого можно подключить рядом.</p>
+                </div>
+                <button onClick={() => setShowGoalHelpModal(false)} className="p-1 rounded-lg transition-colors z-10 shrink-0 ml-2 -mt-1" style={{ color: 'var(--text-muted)' }}>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto modal-scroll">
+              <div className="px-6 md:px-8 py-5">
+                {/* Newcomer info */}
+                <div className="mb-5 rounded-lg p-3" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Елена Васильева · 1-й день</p>
+                  <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 text-[11px]" style={{ color: TERRACOTTA }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: TERRACOTTA }} />
+                      Цель пока не указана
+                    </span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>·</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Первый шаг: стартовый гайд</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>·</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Первая связь пока не появилась</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>·</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Опора пока не назначена</span>
+                  </div>
+                </div>
+
+                {/* Context from application */}
+                <div className="mb-5">
+                  <p className="text-[10px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Контекст</p>
+                  <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>Елена написала в заявке:</p>
+                  <div className="rounded-lg p-3" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                    <p className="text-sm italic leading-relaxed" style={{ color: 'var(--text-secondary)' }}>«Хочу среду, где можно показать код и получить конкретные советы по улучшению.»</p>
+                  </div>
+                  <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>По этому ответу видно направление, но пока непонятно, какой результат для неё важнее всего в первые дни.</p>
+                </div>
+
+                {/* Subject */}
+                <div className="mb-4">
+                  <p className="text-[10px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</p>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm"
+                    value={goalHelpTitle}
+                    onChange={(e) => setGoalHelpTitle(e.target.value)}
+                    maxLength={120}
+                    style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }}
+                  />
+                  <div className="flex justify-end mt-1">
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{goalHelpTitle.length} / 120</span>
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div className="mb-4">
+                  <p className="text-[10px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение новичку</p>
+                  <textarea
+                    className="w-full px-4 py-3 rounded-xl text-sm leading-relaxed resize-none"
+                    value={goalHelpText}
+                    onChange={(e) => setGoalHelpText(e.target.value)}
+                    maxLength={1000}
+                    style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content', overflow: 'hidden' }}
+                  />
+                  <div className="flex justify-end mt-1">
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{goalHelpText.length} / 1000</span>
+                  </div>
+                </div>
+
+                {/* Additional options */}
+                <div className="mb-2">
+                  <p className="text-[10px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Дополнительно</p>
+                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Выберите, что система подготовит после отправки сообщения.</p>
+                  <div className="space-y-3">
+                    {/* Checkbox 1 */}
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <button
+                        onClick={() => setGoalHelpSuggestGoal(!goalHelpSuggestGoal)}
+                        className="w-4 h-4 rounded border shrink-0 mt-0.5 transition-colors flex items-center justify-center"
+                        style={{
+                          borderColor: goalHelpSuggestGoal ? 'var(--gold)' : 'var(--border-color)',
+                          backgroundColor: goalHelpSuggestGoal ? 'var(--gold)' : 'transparent',
+                        }}
+                      >
+                        {goalHelpSuggestGoal && <Check className="w-3 h-3 text-white" />}
+                      </button>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Предложить выбрать цель</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Елена сможет выбрать вариант или написать цель своими словами.</p>
+                      </div>
+                    </label>
+                    {/* Checkbox 2 */}
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <button
+                        onClick={() => setGoalHelpKeepGuide(!goalHelpKeepGuide)}
+                        className="w-4 h-4 rounded border shrink-0 mt-0.5 transition-colors flex items-center justify-center"
+                        style={{
+                          borderColor: goalHelpKeepGuide ? 'var(--gold)' : 'var(--border-color)',
+                          backgroundColor: goalHelpKeepGuide ? 'var(--gold)' : 'transparent',
+                        }}
+                      >
+                        {goalHelpKeepGuide && <Check className="w-3 h-3 text-white" />}
+                      </button>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Оставить стартовый гайд первым шагом</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Пока цель не уточнена, базовый стартовый гайд останется первым шагом.</p>
+                      </div>
+                    </label>
+                    {/* Checkbox 3 */}
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <button
+                        onClick={() => setGoalHelpSuggestSupport(!goalHelpSuggestSupport)}
+                        className="w-4 h-4 rounded border shrink-0 mt-0.5 transition-colors flex items-center justify-center"
+                        style={{
+                          borderColor: goalHelpSuggestSupport ? 'var(--gold)' : 'var(--border-color)',
+                          backgroundColor: goalHelpSuggestSupport ? 'var(--gold)' : 'transparent',
+                        }}
+                      >
+                        {goalHelpSuggestSupport && <Check className="w-3 h-3 text-white" />}
+                      </button>
+                      <div>
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>После ответа предложить опору</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Когда Елена уточнит цель, система подскажет, кого можно подключить рядом.</p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions — sticky footer */}
+            <div className="shrink-0 px-6 md:px-8 py-4" style={{ backgroundColor: 'var(--bg-card)', borderTop: '1px solid var(--border-color)' }}>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => { setShowGoalHelpModal(false); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--gold)', color: '#fff' }}>Отправить сообщение</button>
+                <button onClick={() => { setShowGoalHelpModal(false); }} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Сохранить как черновик</button>
+                <button onClick={() => setShowGoalHelpModal(false)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-muted)' }}>Вернуться к новичку</button>
               </div>
             </div>
           </div>
