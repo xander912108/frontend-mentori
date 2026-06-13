@@ -4068,7 +4068,7 @@ export default function LeaderConsoleEntry() {
                   <div className="space-y-4">
                     <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Для сценария «Доступ открывает лидер вручную»</label>
                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Кнопка после одобрения не показывается. Кандидат получит отдельное уведомление, когда лидер откроет доступ вручную.</p>
-                    <div className="rounded-lg p-4 space-y-4" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
+                    <div className="rounded-lg p-4 space-y-4" style={{ backgroundColor: 'var(--bg-card)' }}>
                       <p className="text-[11px] font-semibold tracking-widest" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Уведомление после открытия доступа</p>
                       <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Кандидат получит это сообщение, когда доступ будет открыт. Так он поймёт, что уже может войти в сообщество и с чего начать.</p>
                       <div className="space-y-3">
@@ -4125,12 +4125,11 @@ export default function LeaderConsoleEntry() {
                   <div>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
-                        <input type="text" maxLength={120} value={nextStepDelayTitle} onChange={(e) => setNextStepDelayTitle(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                        <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату при задержке доступа</label>
+                        <input type="text" maxLength={120} value={nextStepDelayTitle} onChange={(e) => setNextStepDelayTitle(e.target.value)} placeholder="Заголовок сообщения" className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
                         <TitleCounter count={nextStepDelayTitle.length} />
                       </div>
                       <div>
-                        <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату при задержке доступа</label>
                         <textarea maxLength={1000} value={nextStepDelayMsg} onChange={(e) => setNextStepDelayMsg(e.target.value)} className="w-full px-3 py-3 rounded-xl text-sm resize-none leading-relaxed" rows={4} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
                         <div className="mt-1"><MessageCounter count={nextStepDelayMsg.length} /></div>
                       </div>
