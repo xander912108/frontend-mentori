@@ -4065,23 +4065,24 @@ export default function LeaderConsoleEntry() {
                 <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Отображается под сообщением после одобрения.</p>
                 {nextStepScenario === 'manual' ? (
                   <div className="space-y-4">
+                    <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Для сценария «Доступ открывает лидер вручную»</label>
                     <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Кнопка после одобрения не показывается. Кандидат получит отдельное уведомление, когда лидер откроет доступ вручную.</p>
                     <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
                       <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Уведомление после открытия доступа</p>
                       <div className="space-y-3">
                         <div>
-                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
-                          <input type="text" maxLength={120} value={nextStepNotifyTitle} onChange={(e) => setNextStepNotifyTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                          <label className="text-[10px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
+                          <input type="text" maxLength={120} value={nextStepNotifyTitle} onChange={(e) => setNextStepNotifyTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs mb-1" style={{ backgroundColor: '#eae3d9', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
                           <TitleCounter count={nextStepNotifyTitle.length} />
                         </div>
                         <div>
-                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату</label>
-                          <textarea maxLength={1000} value={nextStepNotifyBody} onChange={(e) => setNextStepNotifyBody(e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm resize-none leading-relaxed" rows={5} style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                          <label className="text-[10px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату</label>
+                          <textarea maxLength={1000} value={nextStepNotifyBody} onChange={(e) => setNextStepNotifyBody(e.target.value)} className="w-full px-3 py-2 rounded-xl text-xs resize-none leading-relaxed" rows={5} style={{ backgroundColor: '#eae3d9', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
                           <div className="mt-1"><MessageCounter count={nextStepNotifyBody.length} /></div>
                         </div>
                         <div>
-                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Кнопка для кандидата</label>
-                          <input type="text" maxLength={60} value={nextStepNotifyBtn} onChange={(e) => setNextStepNotifyBtn(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                          <label className="text-[10px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Кнопка для кандидата</label>
+                          <input type="text" maxLength={60} value={nextStepNotifyBtn} onChange={(e) => setNextStepNotifyBtn(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs mb-1" style={{ backgroundColor: '#eae3d9', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
                           <div className="text-right"><span className="text-[11px]" style={{ color: nextStepNotifyBtn.length > 50 ? TERRACOTTA : 'var(--text-muted)' }}>{nextStepNotifyBtn.length} / 60</span></div>
                         </div>
                       </div>
