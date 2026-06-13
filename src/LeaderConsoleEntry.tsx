@@ -619,6 +619,19 @@ export default function LeaderConsoleEntry() {
   /* ===== FIRST 7 DAYS MODAL STATE ===== */
   const [showFirst7DaysModal, setShowFirst7DaysModal] = useState(false);
   const [showMetricsModal, setShowMetricsModal] = useState(false);
+  /* ===== NEXT STEP AFTER APPROVAL MODAL ===== */
+  const [showNextStepModal, setShowNextStepModal] = useState(false);
+  type NextStepScenario = 'immediate' | 'payment' | 'manual';
+  const [nextStepScenario, setNextStepScenario] = useState<NextStepScenario>('immediate');
+  const [nextStepTitle, setNextStepTitle] = useState('Заявка одобрена: следующий шаг');
+  const [nextStepBody, setNextStepBody] = useState('{Имя}, привет!\n\nВаша заявка в «{Сообщество}» одобрена.\n\n{Следующий шаг}\n\nПосле входа вы появитесь в разделе для новичков. Там будет видно, с чего начать, где задать первый вопрос и как получить первый живой отклик.');
+  const [nextStepBtnText, setNextStepBtnText] = useState('Войти в сообщество');
+  const [nextStepSignalNoAccess, setNextStepSignalNoAccess] = useState(true);
+  const [nextStepSignalPaidNoAccess, setNextStepSignalPaidNoAccess] = useState(true);
+  const [nextStepShowCalmMsg, setNextStepShowCalmMsg] = useState(true);
+  const [nextStepDelayMsg, setNextStepDelayMsg] = useState('Оплата прошла, но доступ пока не открылся. Мы уже видим ситуацию и проверяем её. Повторно оплачивать не нужно.');
+  const [showNextStepRestoreConfirm, setShowNextStepRestoreConfirm] = useState(false);
+  const [showNextStepDiscardConfirm, setShowNextStepDiscardConfirm] = useState(false);
   const [showPickMaterialModal, setShowPickMaterialModal] = useState(false);
   type MaterialId = 'guide_community' | 'guide_backend' | 'guide_frontend' | 'guide_first_question';
   const [f7MaterialId, setF7MaterialId] = useState<MaterialId>('guide_community');
@@ -682,13 +695,13 @@ export default function LeaderConsoleEntry() {
 
   /* ===== BODY SCROLL LOCK ===== */
   useEffect(() => {
-    if (newcomerSidePanel || archivePanelOpen || sidePanelApp || showAppMessageModal || showRestoreConfirm || showDiscardConfirm || showFirst7DaysModal || showF7RestoreConfirm || showF7DiscardConfirm || showPickMaterialModal || pickMatDiscardConfirm || showMetricsModal) {
+    if (newcomerSidePanel || archivePanelOpen || sidePanelApp || showAppMessageModal || showRestoreConfirm || showDiscardConfirm || showFirst7DaysModal || showF7RestoreConfirm || showF7DiscardConfirm || showPickMaterialModal || pickMatDiscardConfirm || showMetricsModal || showNextStepModal || showNextStepRestoreConfirm || showNextStepDiscardConfirm) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [newcomerSidePanel, archivePanelOpen, sidePanelApp, showAppMessageModal, showRestoreConfirm, showDiscardConfirm, showFirst7DaysModal, showF7RestoreConfirm, showF7DiscardConfirm, showPickMaterialModal, pickMatDiscardConfirm, showMetricsModal]);
+  }, [newcomerSidePanel, archivePanelOpen, sidePanelApp, showAppMessageModal, showRestoreConfirm, showDiscardConfirm, showFirst7DaysModal, showF7RestoreConfirm, showF7DiscardConfirm, showPickMaterialModal, pickMatDiscardConfirm, showMetricsModal, showNextStepModal, showNextStepRestoreConfirm, showNextStepDiscardConfirm]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
@@ -2885,7 +2898,7 @@ export default function LeaderConsoleEntry() {
                           <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Система проверяет форму заявки, сообщения после решений, условия оплаты и правила открытия доступа.</p>
                         </div>
                       )}
-                      <button onClick={() => setShowSettingsModal(true)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Настроить следующий шаг</button>
+                      <button onClick={() => setShowNextStepModal(true)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Настроить следующий шаг</button>
                     </>
                   )}
                 </div>
@@ -3944,6 +3957,209 @@ export default function LeaderConsoleEntry() {
             <div className="flex flex-wrap gap-2 justify-end">
               <button onClick={() => setPickMatDiscardConfirm(false)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>Продолжить выбор</button>
               <button onClick={() => { setPickMatDiscardConfirm(false); setShowPickMaterialModal(false); setPickMatSelected(f7MaterialId); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ color: TERRACOTTA }}>Выйти без сохранения</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== NEXT STEP AFTER APPROVAL MODAL ===== */}
+      {showNextStepModal && (
+        <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} onClick={() => setShowNextStepDiscardConfirm(true)}>
+          <div className="modal-enter rounded-2xl max-w-2xl w-full max-h-[90vh] relative overflow-hidden flex flex-col" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="shrink-0 flex items-start justify-between p-6 pb-4" style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <div>
+                <h2 className="text-xl font-bold heading-accent mb-1" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Настроить следующий шаг после одобрения</h2>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>После одобрения кандидат должен сразу понимать, что делать дальше: войти в сообщество, перейти к оплате или дождаться открытия доступа.</p>
+                <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>Сейчас следующий шаг указан недостаточно ясно. Настройте сообщение и действие, которое кандидат увидит после одобрения заявки.</p>
+              </div>
+              <button onClick={() => setShowNextStepDiscardConfirm(true)} className="p-1 rounded transition-colors shrink-0 ml-4" style={{ color: 'var(--text-muted)' }}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+              {/* Scenario selection */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Как открывается доступ после одобрения</p>
+                <div className="space-y-3">
+                  {[
+                    { id: 'immediate' as NextStepScenario, title: 'Доступ открывается сразу', desc: 'Подходит для бесплатного входа или закрытых сообществ без оплаты.', preview: 'доступ открыт, можно войти в сообщество и начать со стартового шага.' },
+                    { id: 'payment' as NextStepScenario, title: 'Кандидат переходит к оплате', desc: 'Подходит для платного входа в сообщество.', preview: 'заявка одобрена, следующий шаг — оплатить участие. После успешной оплаты доступ откроется автоматически.' },
+                    { id: 'manual' as NextStepScenario, title: 'Доступ открывает лидер вручную', desc: 'Подходит для случаев, где нужно проверить условия входа перед открытием доступа.', preview: 'заявка одобрена, доступ будет открыт после ручной проверки.' },
+                  ].map((sc) => (
+                    <label key={sc.id} className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${nextStepScenario === sc.id ? 'ring-1' : ''}`} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', ...(nextStepScenario === sc.id ? { ringColor: 'var(--gold)' } : {}) }}>
+                      <input type="radio" name="nextStepScenario" checked={nextStepScenario === sc.id} onChange={() => setNextStepScenario(sc.id)} className="w-4 h-4 accent-gold mt-0.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{sc.title}</p>
+                        <p className="text-xs mb-1.5" style={{ color: 'var(--text-secondary)' }}>{sc.desc}</p>
+                        <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>Что увидит кандидат: {sc.preview}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* Message after approval */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение после одобрения</p>
+                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Этот текст кандидат получит после того, как лидер одобрит заявку. Перед отправкой по конкретной заявке текст можно будет отредактировать.</p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
+                    <input type="text" maxLength={120} value={nextStepTitle} onChange={(e) => setNextStepTitle(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                    <TitleCounter count={nextStepTitle.length} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату</label>
+                    <textarea maxLength={1000} value={nextStepBody} onChange={(e) => setNextStepBody(e.target.value)} className="w-full px-3 py-3 rounded-xl text-sm resize-none leading-relaxed" rows={8} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                    <div className="mt-1"><MessageCounter count={nextStepBody.length} /></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* Variables */}
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Переменные</p>
+                <div className="space-y-1.5">
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}><code className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-card)', color: 'var(--gold)' }}>{'{Имя}'}</code> — имя кандидата</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}><code className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-card)', color: 'var(--gold)' }}>{'{Сообщество}'}</code> — название сообщества</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}><code className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--bg-card)', color: 'var(--gold)' }}>{'{Следующий шаг}'}</code> — автоматически зависит от выбранного сценария</p>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* How system fills next step */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Как система подставит следующий шаг</p>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Если доступ открывается сразу</p>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Доступ уже открыт — можно войти в сообщество и начать со стартового шага.</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Если кандидат переходит к оплате</p>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Чтобы войти в сообщество, завершите оплату. После подтверждения платежа доступ откроется автоматически.</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Если доступ открывает лидер вручную</p>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Заявка одобрена. Мы сообщим, когда доступ будет открыт.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* Button for candidate */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Кнопка для кандидата</p>
+                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Отображается под сообщением после одобрения.</p>
+                {nextStepScenario === 'manual' ? (
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Кнопка не показывается. Кандидат получит уведомление, когда доступ будет открыт.</p>
+                ) : (
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                      {nextStepScenario === 'immediate' ? 'Для сценария «Доступ открывается сразу»' : 'Для сценария «Кандидат переходит к оплате»'}
+                    </label>
+                    <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>Текст кнопки:</p>
+                    <input type="text" maxLength={60} value={nextStepBtnText} onChange={(e) => setNextStepBtnText(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                    <div className="text-right"><span className="text-[11px]" style={{ color: nextStepBtnText.length > 50 ? TERRACOTTA : 'var(--text-muted)' }}>{nextStepBtnText.length} / 60</span></div>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* If something goes wrong */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Если что-то пошло не так</p>
+                <div className="space-y-2 mb-4">
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={nextStepSignalNoAccess} onChange={(e) => setNextStepSignalNoAccess(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Показать лидеру сигнал, если после одобрения доступ не открылся</p>
+                  </label>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={nextStepSignalPaidNoAccess} onChange={(e) => setNextStepSignalPaidNoAccess(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Показать лидеру сигнал, если оплата прошла, но доступ не создан</p>
+                  </label>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={nextStepShowCalmMsg} onChange={(e) => setNextStepShowCalmMsg(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Показать кандидату спокойное сообщение, если оплата прошла, а доступ пока не открылся</p>
+                  </label>
+                </div>
+                {nextStepShowCalmMsg && (
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату при задержке доступа</label>
+                    <textarea maxLength={1000} value={nextStepDelayMsg} onChange={(e) => setNextStepDelayMsg(e.target.value)} className="w-full px-3 py-3 rounded-xl text-sm resize-none leading-relaxed" rows={4} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                    <div className="mt-1"><MessageCounter count={nextStepDelayMsg.length} /></div>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* What changes */}
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Что изменится</p>
+                <ul className="space-y-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <li className="flex gap-2"><span>—</span><span>Новые одобренные заявки получат понятный следующий шаг</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Кандидат сразу увидит, что делать после одобрения</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Если вход платный, система покажет переход к оплате</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Если доступ должен открыться автоматически, система проверит, что он действительно открылся</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Уже отправленные сообщения не изменятся</span></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Sticky footer */}
+            <div className="shrink-0 flex flex-wrap items-center gap-3 p-6 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+              <button onClick={() => { setShowNextStepModal(false); showToast(nextStepScenario === 'payment' ? 'Следующий шаг после одобрения обновлён. Кандидаты будут переходить к оплате.' : nextStepScenario === 'immediate' ? 'Следующий шаг после одобрения обновлён. Доступ будет открываться сразу после одобрения.' : 'Следующий шаг после одобрения обновлён.', 'success'); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: SAGE, color: '#fff' }}>Сохранить настройку</button>
+              <button onClick={() => setShowNextStepRestoreConfirm(true)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Восстановить исходный текст</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== NEXT STEP: RESTORE CONFIRM ===== */}
+      {showNextStepRestoreConfirm && (
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setShowNextStepRestoreConfirm(false)}>
+          <div className="modal-enter rounded-2xl max-w-md w-full p-6 relative" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Восстановить исходный текст?</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Сообщение после одобрения будет заменено стандартным текстом. Уже отправленные сообщения не изменятся.</p>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button onClick={() => setShowNextStepRestoreConfirm(false)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Остаться</button>
+              <button onClick={() => {
+                setNextStepScenario('immediate');
+                setNextStepTitle('Заявка одобрена: следующий шаг');
+                setNextStepBody('{Имя}, привет!\n\nВаша заявка в «{Сообщество}» одобрена.\n\n{Следующий шаг}\n\nПосле входа вы появитесь в разделе для новичков. Там будет видно, с чего начать, где задать первый вопрос и как получить первый живой отклик.');
+                setNextStepBtnText('Войти в сообщество');
+                setNextStepSignalNoAccess(true);
+                setNextStepSignalPaidNoAccess(true);
+                setNextStepShowCalmMsg(true);
+                setNextStepDelayMsg('Оплата прошла, но доступ пока не открылся. Мы уже видим ситуацию и проверяем её. Повторно оплачивать не нужно.');
+                setShowNextStepRestoreConfirm(false);
+                showToast('Исходный текст сообщения восстановлен.', 'success');
+              }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: TERRACOTTA, color: '#fff' }}>Восстановить</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== NEXT STEP: DISCARD CONFIRM ===== */}
+      {showNextStepDiscardConfirm && (
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setShowNextStepDiscardConfirm(false)}>
+          <div className="modal-enter rounded-2xl max-w-md w-full p-6 relative" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Закрыть без сохранения?</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Изменения в следующем шаге после одобрения не сохранятся.</p>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button onClick={() => setShowNextStepDiscardConfirm(false)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>Продолжить редактирование</button>
+              <button onClick={() => { setShowNextStepDiscardConfirm(false); setShowNextStepModal(false); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ color: TERRACOTTA }}>Закрыть без сохранения</button>
             </div>
           </div>
         </div>
