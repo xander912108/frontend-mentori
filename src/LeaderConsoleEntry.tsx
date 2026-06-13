@@ -616,6 +616,32 @@ export default function LeaderConsoleEntry() {
   const [showRestoreConfirm, setShowRestoreConfirm] = useState(false);
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
+  /* ===== FIRST 7 DAYS MODAL STATE ===== */
+  const [showFirst7DaysModal, setShowFirst7DaysModal] = useState(false);
+  const [f7SuggestGuide, setF7SuggestGuide] = useState(true);
+  const [f7SignalDay3, setF7SignalDay3] = useState(true);
+  const [f7SignalNoAction, setF7SignalNoAction] = useState(true);
+  const [f7SignalNoVisit, setF7SignalNoVisit] = useState(false);
+  const [f7HelpGoal, setF7HelpGoal] = useState(true);
+  const [f7GoalTitle, setF7GoalTitle] = useState('Давай уточним твою цель на старт');
+  const [f7GoalBody, setF7GoalBody] = useState('{Имя}, привет! Чтобы мы помогли точнее, напиши, пожалуйста, какой результат для тебя сейчас важнее всего.\n\nМожно выбрать готовый вариант или ответить своими словами. После этого будет проще подобрать первый шаг, встречу, разбор или человека рядом.');
+  const [f7GoalProject, setF7GoalProject] = useState(true);
+  const [f7GoalReview, setF7GoalReview] = useState(true);
+  const [f7GoalTool, setF7GoalTool] = useState(true);
+  const [f7GoalInterview, setF7GoalInterview] = useState(true);
+  const [f7GoalOther, setF7GoalOther] = useState(true);
+  const [f7PrepareDraft, setF7PrepareDraft] = useState(true);
+  const [f7DraftTitle, setF7DraftTitle] = useState('{Имя}, давай спокойно начнём с первого шага');
+  const [f7DraftBody, setF7DraftBody] = useState('{Имя}, привет! Рады, что ты с нами.\n\nВижу, что тебе важно: {Цель}. Чтобы не перегружаться в первые дни, лучше начать с одного понятного действия: {Первый шаг}.\n\nЕсли появится вопрос, можно написать в сообщество — рядом будут участники и команда, которые помогут сориентироваться.');
+  const [f7SigNoConnection, setF7SigNoConnection] = useState(true);
+  const [f7SigNoAnswer, setF7SigNoAnswer] = useState(true);
+  const [f7SigDraftUnsent, setF7SigDraftUnsent] = useState(true);
+  const [f7SigNoStepDay3, setF7SigNoStepDay3] = useState(true);
+  const [f7SigNoGoalDay5, setF7SigNoGoalDay5] = useState(true);
+  const [f7SigSupportUnconfirmed, setF7SigSupportUnconfirmed] = useState(true);
+  const [showF7RestoreConfirm, setShowF7RestoreConfirm] = useState(false);
+  const [showF7DiscardConfirm, setShowF7DiscardConfirm] = useState(false);
+
   /* ===== COLLAPSE STATES ===== */
   const [showDraftFull, setShowDraftFull] = useState(false);
   const [showContextCollapse, setShowContextCollapse] = useState(false);
@@ -649,13 +675,13 @@ export default function LeaderConsoleEntry() {
 
   /* ===== BODY SCROLL LOCK ===== */
   useEffect(() => {
-    if (newcomerSidePanel || archivePanelOpen || sidePanelApp || showAppMessageModal || showRestoreConfirm || showDiscardConfirm) {
+    if (newcomerSidePanel || archivePanelOpen || sidePanelApp || showAppMessageModal || showRestoreConfirm || showDiscardConfirm || showFirst7DaysModal || showF7RestoreConfirm || showF7DiscardConfirm) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [newcomerSidePanel, archivePanelOpen, sidePanelApp, showAppMessageModal, showRestoreConfirm, showDiscardConfirm]);
+  }, [newcomerSidePanel, archivePanelOpen, sidePanelApp, showAppMessageModal, showRestoreConfirm, showDiscardConfirm, showFirst7DaysModal, showF7RestoreConfirm, showF7DiscardConfirm]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
@@ -2793,7 +2819,9 @@ export default function LeaderConsoleEntry() {
                               <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Система учитывает день участия, вопросы без ответа, незавершённые черновики, первую связь и состояние опоры.</p>
                             </div>
                           )}
-                          <button onClick={() => setNewcomerSidePanel(unansweredNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать вопрос</button>
+                          <div className="mt-2">
+                            <button onClick={() => setNewcomerSidePanel(unansweredNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать вопрос</button>
+                          </div>
                         </>
                       ) : draftNc ? (
                         <>
@@ -2807,7 +2835,9 @@ export default function LeaderConsoleEntry() {
                               <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Система учитывает день участия, вопросы без ответа, незавершённые черновики, первую связь и состояние опоры.</p>
                             </div>
                           )}
-                          <button onClick={() => setNewcomerSidePanel(draftNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать черновик</button>
+                          <div className="mt-2">
+                            <button onClick={() => setNewcomerSidePanel(draftNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать черновик</button>
+                          </div>
                         </>
                       ) : noConnectionNc ? (
                         <>
@@ -2821,7 +2851,9 @@ export default function LeaderConsoleEntry() {
                               <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>Система учитывает день участия, вопросы без ответа, незавершённые черновики, первую связь и состояние опоры.</p>
                             </div>
                           )}
-                          <button onClick={() => setNewcomerSidePanel(noConnectionNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать новичка</button>
+                          <div className="mt-2">
+                            <button onClick={() => setNewcomerSidePanel(noConnectionNc)} className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Показать новичка</button>
+                          </div>
                         </>
                       ) : (
                         <>
@@ -2882,7 +2914,7 @@ export default function LeaderConsoleEntry() {
                     {/* --- НОВИЧКИ --- */}
                     {activeSection === 'newcomers' && (
                       <>
-                        <button onClick={() => setShowSettingsModal(true)} className="w-full text-left group flex items-start gap-2.5">
+                        <button onClick={() => setShowFirst7DaysModal(true)} className="w-full text-left group flex items-start gap-2.5">
                           <FileText className="w-3.5 h-3.5 shrink-0 mt-0.5 transition-colors group-hover:text-[var(--gold)]" style={{ color: 'var(--text-muted)' }} />
                           <div>
                             <p className="text-xs font-medium transition-colors group-hover:text-[var(--gold)]" style={{ color: 'var(--text-secondary)' }}>Первые 7 дней</p>
@@ -3592,6 +3624,202 @@ export default function LeaderConsoleEntry() {
                 setShowRestoreConfirm(false);
                 showToast('Исходные тексты восстановлены.', 'success');
               }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: TERRACOTTA, color: '#fff' }}>Восстановить тексты</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== FIRST 7 DAYS MODAL ===== */}
+      {showFirst7DaysModal && (
+        <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} onClick={() => setShowF7DiscardConfirm(true)}>
+          <div className="modal-enter rounded-2xl max-w-2xl w-full max-h-[90vh] relative overflow-hidden flex flex-col" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="shrink-0 flex items-start justify-between p-6 pb-4" style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <div>
+                <h2 className="text-xl font-bold heading-accent mb-1" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Первые 7 дней</h2>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Настройте базовый сценарий входа новичка: какой первый шаг предлагать по умолчанию, как уточнять цель и какой первый отклик подготавливать для лидера.</p>
+                <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>Эти настройки помогают не оставлять новичка без ориентира, но не отправляют сообщения автоматически. Перед отправкой лидер сможет отредактировать текст в карточке конкретного новичка.</p>
+              </div>
+              <button onClick={() => setShowF7DiscardConfirm(true)} className="p-1 rounded transition-colors shrink-0 ml-4" style={{ color: 'var(--text-muted)' }}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+              {/* Basic first step */}
+              <div>
+                <label className="flex items-start gap-3 cursor-pointer mb-3">
+                  <input type="checkbox" checked={f7SuggestGuide} onChange={(e) => setF7SuggestGuide(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Предлагать стартовый гайд, если персональный первый шаг ещё не выбран</p>
+                </label>
+                <div className="rounded-lg p-4 ml-7" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                  <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Первый шаг по умолчанию</p>
+                  <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Стартовый гайд по сообществу</p>
+                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Помогает понять, как устроено сообщество, где задавать вопросы, где искать материалы и с чего начать.</p>
+                  <button className="text-[11px] px-3 py-1.5 rounded-lg transition-all duration-200 hover:opacity-80" style={{ color: 'var(--gold)', border: '1px solid var(--gold)' }}>Выбрать другой материал</button>
+                </div>
+                <div className="mt-3 ml-7 space-y-2">
+                  <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Когда показывать сигнал лидеру</p>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={f7SignalDay3} onChange={(e) => setF7SignalDay3(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Если к 3-му дню первый шаг не выбран</p>
+                  </label>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={f7SignalNoAction} onChange={(e) => setF7SignalNoAction(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Если новичок открыл гайд, но не сделал ни одного действия</p>
+                  </label>
+                  <label className="flex items-start gap-2 cursor-pointer">
+                    <input type="checkbox" checked={f7SignalNoVisit} onChange={(e) => setF7SignalNoVisit(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Если новичок не заходил в сообщество больше суток после открытия доступа</p>
+                  </label>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* Goal help */}
+              <div>
+                <label className="flex items-start gap-3 cursor-pointer mb-3">
+                  <input type="checkbox" checked={f7HelpGoal} onChange={(e) => setF7HelpGoal(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Помогать новичку уточнить цель</p>
+                </label>
+                <div className="ml-7 space-y-4">
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
+                    <input type="text" maxLength={120} value={f7GoalTitle} onChange={(e) => setF7GoalTitle(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                    <TitleCounter count={f7GoalTitle.length} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение новичку</label>
+                    <textarea maxLength={1000} value={f7GoalBody} onChange={(e) => setF7GoalBody(e.target.value)} className="w-full px-3 py-3 rounded-xl text-sm resize-none leading-relaxed" rows={6} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                    <div className="mt-1"><MessageCounter count={f7GoalBody.length} /></div>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Варианты цели</p>
+                    <div className="space-y-2">
+                      {[
+                        { key: 'f7GoalProject', label: 'Собрать первый pet-проект', state: f7GoalProject, setter: setF7GoalProject },
+                        { key: 'f7GoalReview', label: 'Получить разбор проекта или кода', state: f7GoalReview, setter: setF7GoalReview },
+                        { key: 'f7GoalTool', label: 'Освоить конкретный инструмент', state: f7GoalTool, setter: setF7GoalTool },
+                        { key: 'f7GoalInterview', label: 'Подготовиться к собеседованию', state: f7GoalInterview, setter: setF7GoalInterview },
+                        { key: 'f7GoalOther', label: 'Другая цель — написать своими словами', state: f7GoalOther, setter: setF7GoalOther },
+                      ].map((opt) => (
+                        <label key={opt.key} className="flex items-start gap-2 cursor-pointer">
+                          <input type="checkbox" checked={opt.state} onChange={(e) => opt.setter(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{opt.label}</p>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* First response draft */}
+              <div>
+                <label className="flex items-start gap-3 cursor-pointer mb-3">
+                  <input type="checkbox" checked={f7PrepareDraft} onChange={(e) => setF7PrepareDraft(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Подготавливать черновик первого отклика для новичка</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Черновик учитывает имя, цель, первый шаг и день участия. Он сохраняется в карточке новичка и не отправляется автоматически.</p>
+                  </div>
+                </label>
+                <div className="ml-7 space-y-4">
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
+                    <input type="text" maxLength={120} value={f7DraftTitle} onChange={(e) => setF7DraftTitle(e.target.value)} className="w-full px-3 py-2.5 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                    <TitleCounter count={f7DraftTitle.length} />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение новичку</label>
+                    <textarea maxLength={1000} value={f7DraftBody} onChange={(e) => setF7DraftBody(e.target.value)} className="w-full px-3 py-3 rounded-xl text-sm resize-none leading-relaxed" rows={6} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                    <div className="mt-1"><MessageCounter count={f7DraftBody.length} /></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* Signals */}
+              <div>
+                <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сигналы первых дней</p>
+                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Показывать в разделе «Новички», если:</p>
+                <div className="space-y-2">
+                  {[
+                    { key: 'f7SigNoConnection', label: 'Первой связи нет больше 24 часов', state: f7SigNoConnection, setter: setF7SigNoConnection },
+                    { key: 'f7SigNoAnswer', label: 'Первый вопрос остаётся без ответа', state: f7SigNoAnswer, setter: setF7SigNoAnswer },
+                    { key: 'f7SigDraftUnsent', label: 'Есть сохранённый черновик, но сообщение не отправлено', state: f7SigDraftUnsent, setter: setF7SigDraftUnsent },
+                    { key: 'f7SigNoStepDay3', label: 'К 3-му дню не выбран первый шаг', state: f7SigNoStepDay3, setter: setF7SigNoStepDay3 },
+                    { key: 'f7SigNoGoalDay5', label: 'К 5-му дню цель не указана или слишком общая', state: f7SigNoGoalDay5, setter: setF7SigNoGoalDay5 },
+                    { key: 'f7SigSupportUnconfirmed', label: 'Опора предложена, но не подтверждена больше суток', state: f7SigSupportUnconfirmed, setter: setF7SigSupportUnconfirmed },
+                  ].map((sig) => (
+                    <label key={sig.key} className="flex items-start gap-2 cursor-pointer">
+                      <input type="checkbox" checked={sig.state} onChange={(e) => sig.setter(e.target.checked)} className="w-4 h-4 rounded accent-gold mt-0.5" />
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{sig.label}</p>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+
+              {/* What changes */}
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                <p className="text-[11px] font-semibold tracking-widest mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Что изменится</p>
+                <ul className="space-y-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <li className="flex gap-2"><span>—</span><span>Новые карточки новичков будут получать базовый первый шаг, если персональный шаг ещё не выбран</span></li>
+                  <li className="flex gap-2"><span>—</span><span>При отсутствии цели система предложит сценарий уточнения</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Для первого отклика будет готовиться черновик</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Сигналы первых дней будут попадать в соответствующие срезы раздела «Новички»</span></li>
+                  <li className="flex gap-2"><span>—</span><span>Уже отправленные сообщения и завершённые действия не изменятся</span></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Sticky footer */}
+            <div className="shrink-0 flex flex-wrap items-center gap-3 p-6 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+              <button onClick={() => { setShowFirst7DaysModal(false); showToast('Настройки первых 7 дней сохранены.', 'success'); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: SAGE, color: '#fff' }}>Сохранить настройки</button>
+              <button onClick={() => setShowF7RestoreConfirm(true)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Восстановить исходные настройки</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== FIRST 7 DAYS: RESTORE CONFIRM ===== */}
+      {showF7RestoreConfirm && (
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setShowF7RestoreConfirm(false)}>
+          <div className="modal-enter rounded-2xl max-w-md w-full p-6 relative" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Восстановить исходные настройки?</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Все изменения в настройках первых 7 дней будут заменены исходными значениями. Уже отправленные сообщения и завершённые действия не изменятся.</p>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button onClick={() => setShowF7RestoreConfirm(false)} className="px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:opacity-80" style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>Вернуться к настройке</button>
+              <button onClick={() => {
+                setF7SuggestGuide(true); setF7SignalDay3(true); setF7SignalNoAction(true); setF7SignalNoVisit(false);
+                setF7HelpGoal(true); setF7GoalTitle('Давай уточним твою цель на старт');
+                setF7GoalBody('{Имя}, привет! Чтобы мы помогли точнее, напиши, пожалуйста, какой результат для тебя сейчас важнее всего.\n\nМожно выбрать готовый вариант или ответить своими словами. После этого будет проще подобрать первый шаг, встречу, разбор или человека рядом.');
+                setF7GoalProject(true); setF7GoalReview(true); setF7GoalTool(true); setF7GoalInterview(true); setF7GoalOther(true);
+                setF7PrepareDraft(true); setF7DraftTitle('{Имя}, давай спокойно начнём с первого шага');
+                setF7DraftBody('{Имя}, привет! Рады, что ты с нами.\n\nВижу, что тебе важно: {Цель}. Чтобы не перегружаться в первые дни, лучше начать с одного понятного действия: {Первый шаг}.\n\nЕсли появится вопрос, можно написать в сообщество — рядом будут участники и команда, которые помогут сориентироваться.');
+                setF7SigNoConnection(true); setF7SigNoAnswer(true); setF7SigDraftUnsent(true); setF7SigNoStepDay3(true); setF7SigNoGoalDay5(true); setF7SigSupportUnconfirmed(true);
+                setShowF7RestoreConfirm(false);
+                showToast('Исходные настройки первых 7 дней восстановлены.', 'success');
+              }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: TERRACOTTA, color: '#fff' }}>Восстановить настройки</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== FIRST 7 DAYS: DISCARD CONFIRM ===== */}
+      {showF7DiscardConfirm && (
+        <div className="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={() => setShowF7DiscardConfirm(false)}>
+          <div className="modal-enter rounded-2xl max-w-md w-full p-6 relative" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow-hover)' }} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>Закрыть без сохранения?</h3>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>Изменения в настройках первых 7 дней не сохранятся.</p>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <button onClick={() => setShowF7DiscardConfirm(false)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--hover-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>Продолжить редактирование</button>
+              <button onClick={() => { setShowF7DiscardConfirm(false); setShowFirst7DaysModal(false); }} className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:opacity-90" style={{ color: TERRACOTTA }}>Закрыть без сохранения</button>
             </div>
           </div>
         </div>
