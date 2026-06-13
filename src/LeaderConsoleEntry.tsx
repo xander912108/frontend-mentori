@@ -696,12 +696,6 @@ export default function LeaderConsoleEntry() {
     <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
   );
 
-  /* ===== NEXT STEP BUTTON TEXT SYNC ===== */
-  useEffect(() => {
-    if (nextStepScenario === 'immediate') setNextStepBtnText('Войти в сообщество');
-    if (nextStepScenario === 'payment') setNextStepBtnText('Перейти к оплате');
-  }, [nextStepScenario]);
-
   /* ===== BODY SCROLL LOCK ===== */
   useEffect(() => {
     if (newcomerSidePanel || archivePanelOpen || sidePanelApp || showAppMessageModal || showRestoreConfirm || showDiscardConfirm || showFirst7DaysModal || showF7RestoreConfirm || showF7DiscardConfirm || showPickMaterialModal || pickMatDiscardConfirm || showMetricsModal || showNextStepModal || showNextStepRestoreConfirm || showNextStepDiscardConfirm) {
@@ -3999,7 +3993,7 @@ export default function LeaderConsoleEntry() {
                     { id: 'manual' as NextStepScenario, title: 'Доступ открывает лидер вручную', desc: 'Подходит для случаев, где нужно проверить условия входа перед открытием доступа.', preview: 'заявка одобрена, доступ будет открыт после ручной проверки.' },
                   ].map((sc) => (
                     <label key={sc.id} className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${nextStepScenario === sc.id ? 'ring-1' : ''}`} style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)', ...(nextStepScenario === sc.id ? { ringColor: 'var(--gold)' } : {}) }}>
-                      <input type="radio" name="nextStepScenario" checked={nextStepScenario === sc.id} onChange={() => setNextStepScenario(sc.id)} className="w-4 h-4 accent-gold mt-0.5 shrink-0" />
+                      <input type="radio" name="nextStepScenario" checked={nextStepScenario === sc.id} onChange={() => { setNextStepScenario(sc.id); if (sc.id === 'immediate') setNextStepBtnText('Войти в сообщество'); if (sc.id === 'payment') setNextStepBtnText('Перейти к оплате'); }} className="w-4 h-4 accent-gold mt-0.5 shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>{sc.title}</p>
                         <p className="text-xs mb-1.5" style={{ color: 'var(--text-secondary)' }}>{sc.desc}</p>
