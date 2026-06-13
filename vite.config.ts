@@ -5,7 +5,7 @@ import { inspectAttr } from 'kimi-plugin-inspect-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.GITHUB_PAGES === 'true' ? '/mentori-club/' : './',
+  base: process.env.GITHUB_PAGES === 'true' ? '/frontend-mentori/' : './',
   plugins: [inspectAttr(), react()],
   server: {
     port: 3000,
