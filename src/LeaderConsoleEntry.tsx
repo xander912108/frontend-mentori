@@ -4125,9 +4125,9 @@ export default function LeaderConsoleEntry() {
                 </div>
                 {nextStepShowCalmMsg && (
                   <>
-                    <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
+                    <div className="h-px mt-4" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 mt-4">
                       <p className="text-[11px] font-semibold tracking-widest" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату при задержке доступа</p>
                       <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Показывается, если платёж прошёл, но доступ пока не открылся автоматически.</p>
                       <div className="space-y-3">
