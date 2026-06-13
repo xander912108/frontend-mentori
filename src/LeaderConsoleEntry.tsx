@@ -626,6 +626,9 @@ export default function LeaderConsoleEntry() {
   const [nextStepTitle, setNextStepTitle] = useState('Заявка одобрена: следующий шаг');
   const [nextStepBody, setNextStepBody] = useState('{Имя}, привет!\n\nВаша заявка в «{Сообщество}» одобрена.\n\n{Следующий шаг}\n\nПосле входа вы появитесь в разделе для новичков. Там будет видно, с чего начать, где задать первый вопрос и как получить первый живой отклик.');
   const [nextStepBtnText, setNextStepBtnText] = useState('Войти в сообщество');
+  const [nextStepNotifyTitle, setNextStepNotifyTitle] = useState('Доступ к сообществу открыт');
+  const [nextStepNotifyBody, setNextStepNotifyBody] = useState('{Имя}, привет!\n\nДоступ к «{Сообщество}» открыт. Теперь можно войти в сообщество и начать со стартового шага.\n\nВ первые дни мы поможем сориентироваться: выбрать понятный первый шаг, задать вопрос и найти людей рядом.');
+  const [nextStepNotifyBtn, setNextStepNotifyBtn] = useState('Войти в сообщество');
   const [nextStepSignalNoAccess, setNextStepSignalNoAccess] = useState(true);
   const [nextStepSignalPaidNoAccess, setNextStepSignalPaidNoAccess] = useState(true);
   const [nextStepShowCalmMsg, setNextStepShowCalmMsg] = useState(true);
@@ -692,6 +695,12 @@ export default function LeaderConsoleEntry() {
   const GradientDivider = () => (
     <div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, var(--border-color), transparent)' }} />
   );
+
+  /* ===== NEXT STEP BUTTON TEXT SYNC ===== */
+  useEffect(() => {
+    if (nextStepScenario === 'immediate') setNextStepBtnText('Войти в сообщество');
+    if (nextStepScenario === 'payment') setNextStepBtnText('Перейти к оплате');
+  }, [nextStepScenario]);
 
   /* ===== BODY SCROLL LOCK ===== */
   useEffect(() => {
@@ -4061,7 +4070,29 @@ export default function LeaderConsoleEntry() {
                 <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Кнопка для кандидата</p>
                 <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Отображается под сообщением после одобрения.</p>
                 {nextStepScenario === 'manual' ? (
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Кнопка не показывается. Кандидат получит уведомление, когда доступ будет открыт.</p>
+                  <div className="space-y-4">
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Кнопка после одобрения не показывается. Кандидат получит отдельное уведомление, когда лидер откроет доступ вручную.</p>
+                    <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
+                      <p className="text-[11px] font-semibold tracking-widest mb-3" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Уведомление после открытия доступа</p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Заголовок сообщения</label>
+                          <input type="text" maxLength={120} value={nextStepNotifyTitle} onChange={(e) => setNextStepNotifyTitle(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                          <TitleCounter count={nextStepNotifyTitle.length} />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Сообщение кандидату</label>
+                          <textarea maxLength={1000} value={nextStepNotifyBody} onChange={(e) => setNextStepNotifyBody(e.target.value)} className="w-full px-3 py-2 rounded-xl text-sm resize-none leading-relaxed" rows={5} style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none', fieldSizing: 'content' }} />
+                          <div className="mt-1"><MessageCounter count={nextStepNotifyBody.length} /></div>
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold tracking-widest block mb-1" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Кнопка для кандидата</label>
+                          <input type="text" maxLength={60} value={nextStepNotifyBtn} onChange={(e) => setNextStepNotifyBtn(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm mb-1" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', outline: 'none' }} />
+                          <div className="text-right"><span className="text-[11px]" style={{ color: nextStepNotifyBtn.length > 50 ? TERRACOTTA : 'var(--text-muted)' }}>{nextStepNotifyBtn.length} / 60</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div>
                     <label className="text-[11px] font-semibold tracking-widest block mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
@@ -4139,6 +4170,9 @@ export default function LeaderConsoleEntry() {
                 setNextStepTitle('Заявка одобрена: следующий шаг');
                 setNextStepBody('{Имя}, привет!\n\nВаша заявка в «{Сообщество}» одобрена.\n\n{Следующий шаг}\n\nПосле входа вы появитесь в разделе для новичков. Там будет видно, с чего начать, где задать первый вопрос и как получить первый живой отклик.');
                 setNextStepBtnText('Войти в сообщество');
+                setNextStepNotifyTitle('Доступ к сообществу открыт');
+                setNextStepNotifyBody('{Имя}, привет!\n\nДоступ к «{Сообщество}» открыт. Теперь можно войти в сообщество и начать со стартового шага.\n\nВ первые дни мы поможем сориентироваться: выбрать понятный первый шаг, задать вопрос и найти людей рядом.');
+                setNextStepNotifyBtn('Войти в сообщество');
                 setNextStepSignalNoAccess(true);
                 setNextStepSignalPaidNoAccess(true);
                 setNextStepShowCalmMsg(true);
